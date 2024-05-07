@@ -12,4 +12,5 @@ add_executable(Algorithm
         src/circular_list.h
         src/stack.h
         src/queue.h
-        src/hash_table.h)
+        src/hash_table.h
+        src/binary_tree.h)
