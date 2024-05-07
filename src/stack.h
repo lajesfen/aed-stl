@@ -4,41 +4,44 @@
 #include <iostream>
 #define MAX_STACK_SIZE 100
 
-class stack {
+template <typename T>
+class Stack {
 private:
-    struct element {
-        int key;
-    };
-
-    element list[MAX_STACK_SIZE];
-    int _top;
+    T list[MAX_STACK_SIZE];
+    int top_index;
 
 public:
-    int isfull() {
-        if(_top >= MAX_STACK_SIZE - 1) {
+    Stack() {
+        top_index = -1;
+    }
+
+    int isFull() {
+        if(top_index >= MAX_STACK_SIZE - 1) {
             return 1;
         }
         return 0;
     }
 
-    int isempty() {
-        if(_top == -1) {
+    int isEmpty() {
+        if(top_index == -1) {
             return 1;
         }
         return 0;
     }
 
-    element top() {
-        return list[_top];
+    T top() {
+        return list[top_index];
     }
 
-    void push(element e) {
-        (_top)++;
-        list[_top] = e;
+    void push(T e) {
+        (top_index)++;
+        list[top_index] = e;
     }
 
-    void pop() {
-        (_top)--;
+    T pop() {
+        T item = top();
+        (top_index)--;
+        return item;
     }
 };
 

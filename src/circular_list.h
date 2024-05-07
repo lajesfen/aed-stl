@@ -9,31 +9,46 @@ struct Node {
     Node *prev;
     Node *next;
 
-    Node() = default;
-    explicit Node(T data): data(data) {};
+    explicit Node(T data) {
+        this->data = data;
+        prev = nullptr;
+        next = nullptr;
+    };
 };
 
 template <typename T>
-class circular_linked_list {
+class CircularLinkedList {
 private:
     Node<T> *head;
 
-    circular_linked_list() {
+public:
+    CircularLinkedList() {
         head = new Node<T>();
         head->next = head;
         head->prev = head;
     }
 
-public:
+    ~CircularLinkedList() {
+        while (!isEmpty()) {
+            popFront();
+        }
+
+        delete head;
+    }
+
+    bool isEmpty() {
+        return head == head->next;
+    }
+
     T front() {
-        return head->data;
+        return head->next->data;
     }
 
     T back() {
         return head->prev->data;
     }
 
-    void push_front(T data) {
+    void pushFront(T data) {
         auto *node = new Node<T>(data);
 
         node->next = head->next;
@@ -41,7 +56,13 @@ public:
 
         head->next->prev = node;
         head->next = node;
+    }
 
+    void popFront() {
+        Node<T> *temp = head->next;
+        head->next = temp->next;
+        temp->next->prev = head;
+        delete temp;
     }
 };
 

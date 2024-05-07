@@ -4,20 +4,23 @@
 #include <iostream>
 
 template <typename T>
-struct node {
+struct Node {
     T data;
-    node *next;
+    Node *next;
 
-    node() {};
+    Node() {
+        data = NULL;
+        next = nullptr;
+    };
 };
 
 template <typename T>
-class forward_list {
+class ForwardList {
 private:
-    node<T> *head;
+    Node<T> *head;
 
 public:
-    forward_list() {
+    ForwardList() {
         head = NULL;
     };
 
@@ -26,7 +29,7 @@ public:
     };
 
     T back(){
-        node<T> *temp = head;
+        Node<T> *temp = head;
 
         while(temp->next != NULL) {
             temp = temp->next;
@@ -35,18 +38,18 @@ public:
         return temp->data;
     };
 
-    void push_front(T data) {
-        auto *temp = new node<T>;
+    void pushFront(T data) {
+        auto *temp = new Node<T>;
         temp->data = data;
         temp->next = head;
         head = temp;
     };
 
-    void push_back(T data) {
-        auto *temp = new node<T>;
+    void pushBack(T data) {
+        auto *temp = new Node<T>;
         temp->data = data;
 
-        node<T> *temp2 = head;
+        Node<T> *temp2 = head;
 
         while(temp2->next != NULL) {
             temp2 = temp2-> next;
@@ -56,18 +59,18 @@ public:
         temp->next = NULL;
     };
 
-    T pop_front() {
-        node<T> *temp = head;
+    T popFront() {
+        Node<T> *temp = head;
         head = head->next;
         delete temp;
     }
 
-    T pop_back() {
+    T popBack() {
         if(head->next == NULL) {
             delete head;
             head = NULL;
         } else {
-            node<T> *temp = head;
+            Node<T> *temp = head;
             while(temp->next->next != NULL) {
                 temp = temp->next;
             }
@@ -77,7 +80,7 @@ public:
     }
 
     T operator[](int i){
-        node<T> *temp = head;
+        Node<T> *temp = head;
         int t = 0;
 
         while(t != i) {
@@ -94,7 +97,7 @@ public:
 
     int size() {
         int size = 0;
-        node<T> *temp = head;
+        Node<T> *temp = head;
 
         while(temp != NULL) {
             temp = temp->next;
@@ -106,15 +109,15 @@ public:
 
     void clear(){
         while(!empty()) {
-            pop_front();
+            popFront();
         }
     };
 
     void sort() {
-        node<T> *temp = head;
+        Node<T> *temp = head;
         while (temp) {
-            node<T> *min = temp;
-            node<T> *r = temp->next;
+            Node<T> *min = temp;
+            Node<T> *r = temp->next;
 
             while (r) {
                 if (min->data > r->data) {
@@ -131,9 +134,9 @@ public:
     };
 
     void reverse(){
-        node<T> *temp = head;
-        node<T> *prev = NULL;
-        node<T> *next = NULL;
+        Node<T> *temp = head;
+        Node<T> *prev = NULL;
+        Node<T> *next = NULL;
 
         while(temp != NULL) {
             next = temp->next;
@@ -145,7 +148,7 @@ public:
     };
 
     void print() {
-        node<T> *temp = head;
+        Node<T> *temp = head;
 
         while(temp->next != NULL) {
             std::cout << temp->data << " ";

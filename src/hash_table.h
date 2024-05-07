@@ -4,17 +4,21 @@
 #include <iostream>
 #define MAX_SIZE 1000
 
-struct node {
+struct Node {
     char key;
     int value;
-    node *next;
+    Node *next;
 
-    node(char k, int v) : value(v), key(k), next(nullptr) {}
+    Node(char k, int v) {
+        value = v;
+        key = k;
+        next = nullptr;
+    }
 };
 
-class hash_table {
+class HashTable {
 private:
-    node **table;
+    Node **table;
     int size;
 
     static int hash(char key) { // Modify depending on Hashing method
@@ -22,18 +26,18 @@ private:
     }
 
 public:
-    hash_table(int t) : size(t) {
+    HashTable(int t) : size(t) {
         size = std::max(0, std::min(size, MAX_SIZE));
-        table = new node *[size]();
+        table = new Node *[size]();
     }
 
-    ~hash_table() {
+    ~HashTable() {
         for (int i = 0; i < size; ++i)
         {
-            node *current = table[i];
+            Node *current = table[i];
             while (current != nullptr)
             {
-                node *temp = current;
+                Node *temp = current;
                 current = current->next;
                 delete temp;
             }
@@ -43,12 +47,12 @@ public:
 
     void insert(char key, int value) {
         int i = hash(key) % size;
-        node *newNode = new node(key, value);
+        Node *new_node = new Node(key, value);
 
         if (table[i] == nullptr)
-            table[i] = newNode;
+            table[i] = new_node;
         else {
-            node *current = table[i];
+            Node *current = table[i];
             while (current->next != nullptr) {
                 if (current->key == key) {
                     current->value = value;
@@ -59,14 +63,14 @@ public:
             if (current->key == key) {
                 current->value = value;
             } else {
-                current->next = newNode;
+                current->next = new_node;
             }
         }
     }
 
-    int hashing(char key) {
+    int find(char key) {
         int i = hash(key) % size;
-        node *current = table[i];
+        Node *current = table[i];
         while (current != nullptr) {
             if (current->key == key) {
                 return current->value;

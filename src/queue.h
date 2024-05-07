@@ -3,41 +3,46 @@
 
 #define MAX_Q_SIZE 100
 
-struct element {
-    int key;
-};
-
-class queue {
+template <typename T>
+class Queue {
 private:
-    element list[MAX_Q_SIZE];
-    int front, rear;
+    T list[MAX_Q_SIZE];
+    int front_index, rear_index;
 
 public:
-    int isfull() {
-        if(front == ((rear + 1) % MAX_Q_SIZE)) {
+    Queue() {
+        front_index = 0;
+        rear_index = 0;
+    }
+
+    int isFull() {
+        if(front_index == ((rear_index + 1) % MAX_Q_SIZE)) {
             return 1;
         }
         return 0;
     }
 
-    int isempty() {
-        if(front == rear) {
+    int isEmpty() {
+        if(front_index == rear_index) {
             return 1;
         }
         return 0;
     }
 
-    element _front() {
-        return list[(front + 1) % MAX_Q_SIZE];
+    T front() {
+        return list[(front_index + 1) % MAX_Q_SIZE];
     }
 
-    void enqueue(element e) {
-        rear = (rear + 1) % MAX_Q_SIZE;
-        list[rear] = e;
+    void enqueue(T e) {
+        if(isFull()) return;
+        rear_index = (rear_index + 1) % MAX_Q_SIZE;
+        list[rear_index] = e;
     }
 
-    void dequeue() {
-        front = (front + 1) % MAX_Q_SIZE;
+    T dequeue() {
+        T item = front();
+        front_index = (front_index + 1) % MAX_Q_SIZE;
+        return item;
     }
 };
 
