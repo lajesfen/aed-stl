@@ -19,6 +19,8 @@ struct BinaryTree {
         root = NULL;
     };
 
+    //ToDO: Precesor y Predecesor
+
     bool find(NodeBT *node, T value) {
         if(node == nullptr) {
             return false;
@@ -51,8 +53,47 @@ struct BinaryTree {
         return node;
     };
 
-    void remove(T value) {
+    NodeBT *getMinValue(NodeBT *node) {
+        if(node == nullptr) {
+            return;
+        } else if (node->left == nullptr) {
+            return node;
+        } else {
+            return getMinValue(node->left);
+        }
+    }
 
+    NodeBT *getMaxValue(NodeBT *node) {
+        if(node == nullptr) {
+            return;
+        } else if (node->right == nullptr) {
+            return node;
+        } else {
+            return getMinValue(node->right);
+        }
+    }
+
+    void remove(T value, NodeBT *node) {
+        NodeBT *temp;
+        if(node == nullptr) {
+            return;
+        } else if (value < node->data) {
+            node->left = remove(value, node->left);
+        } else if (value > node->data) {
+            node->right = remove(value, node->left);
+        } else if (node->left && node->right) {
+            temp = getMinValue(node->right);
+            node->data = temp->data;
+            node->right = remove(node->data, node->right);
+        } else {
+            temp = node;
+            if(node->left == nullptr) {
+                node = node->right;
+            } else if (node->right == nullptr) {
+                node = node->left;
+            }
+            delete temp;
+        }
     };
 
     void postOrder(NodeBT *node) {
