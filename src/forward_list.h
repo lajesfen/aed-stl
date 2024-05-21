@@ -9,7 +9,6 @@ struct Node {
     Node *next;
 
     Node() {
-        data = NULL;
         next = nullptr;
     };
 };
@@ -21,7 +20,7 @@ private:
 
 public:
     ForwardList() {
-        head = NULL;
+        head = nullptr;
     };
 
     T front() {
@@ -31,7 +30,7 @@ public:
     T back(){
         Node<T> *temp = head;
 
-        while(temp->next != NULL) {
+        while(temp->next != nullptr) {
             temp = temp->next;
         }
 
@@ -46,17 +45,22 @@ public:
     };
 
     void pushBack(T data) {
-        auto *temp = new Node<T>;
-        temp->data = data;
+        auto *newNode = new Node<T>;
+        newNode->data = data;
+        newNode->next = nullptr;
 
-        Node<T> *temp2 = head;
-
-        while(temp2->next != NULL) {
-            temp2 = temp2-> next;
+        if(head == nullptr) {
+            head = newNode;
+            return;
         }
 
-        temp2->next = temp;
-        temp->next = NULL;
+        Node<T> *temp = head;
+        while(temp->next != nullptr) {
+            temp = temp-> next;
+        }
+
+        temp->next = newNode;
+        newNode->next = nullptr;
     };
 
     T popFront() {
@@ -65,17 +69,17 @@ public:
         delete temp;
     }
 
-    T popBack() {
-        if(head->next == NULL) {
+    void popBack() {
+        if(head->next == nullptr) {
             delete head;
-            head = NULL;
+            head = nullptr;
         } else {
             Node<T> *temp = head;
-            while(temp->next->next != NULL) {
+            while(temp->next->next != nullptr) {
                 temp = temp->next;
             }
             delete temp->next;
-            temp->next = NULL;
+            temp->next = nullptr;
         }
     }
 
@@ -92,14 +96,14 @@ public:
     };
 
     bool empty(){
-        return head == NULL;
+        return head == nullptr;
     };
 
     int size() {
         int size = 0;
         Node<T> *temp = head;
 
-        while(temp != NULL) {
+        while(temp != nullptr) {
             temp = temp->next;
             ++size;
         }
@@ -135,10 +139,10 @@ public:
 
     void reverse(){
         Node<T> *temp = head;
-        Node<T> *prev = NULL;
-        Node<T> *next = NULL;
+        Node<T> *prev = nullptr;
+        Node<T> *next = nullptr;
 
-        while(temp != NULL) {
+        while(temp != nullptr) {
             next = temp->next;
             temp->next = prev;
             prev = temp;
@@ -150,7 +154,7 @@ public:
     void print() {
         Node<T> *temp = head;
 
-        while(temp->next != NULL) {
+        while(temp != nullptr) {
             std::cout << temp->data << " ";
             temp = temp->next;
         }

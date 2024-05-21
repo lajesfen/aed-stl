@@ -3,26 +3,26 @@
 
 #include <iostream>
 
-// ToDo
-// ToDo
-// ToDo
-
 template <typename T>
-struct node {
+struct Node {
     T data;
-    node *next;
+    Node *next;
+    Node *prev;
 
-    node() {};
+    Node() {
+        next = nullptr;
+        prev = nullptr;
+    };
 };
 
 template <typename T>
-class forward_list {
+class DoublyLinkedList {
 private:
-    node<T> *head;
+    Node<T> *head;
 
 public:
-    forward_list() {
-        head = NULL;
+    DoublyLinkedList() {
+        head = nullptr;
     };
 
     T front() {
@@ -30,58 +30,75 @@ public:
     };
 
     T back(){
-        node<T> *temp = head;
+        Node<T> *temp = head;
 
-        while(temp->next != NULL) {
+        while(temp->next != nullptr) {
             temp = temp->next;
         }
 
         return temp->data;
     };
 
-    void push_front(T data) {
-        auto *temp = new node<T>;
+    void pushFront(T data) {
+        auto *temp = new Node<T>;
         temp->data = data;
         temp->next = head;
+        temp->prev = nullptr;
+
+        if (head != nullptr) {
+            head->prev = temp;
+        }
+
         head = temp;
     };
 
-    void push_back(T data) {
-        auto *temp = new node<T>;
-        temp->data = data;
+    void pushBack(T data) {
+        auto *newNode = new Node<T>;
+        newNode->data = data;
+        newNode->next = nullptr;
 
-        node<T> *temp2 = head;
-
-        while(temp2->next != NULL) {
-            temp2 = temp2-> next;
+        if(head == nullptr) {
+            newNode->prev = nullptr;
+            head = newNode;
+            return;
         }
 
-        temp2->next = temp;
-        temp->next = NULL;
+        Node<T> *temp = head;
+        while(temp->next != nullptr) {
+            temp = temp-> next;
+        }
+
+        temp->next = newNode;
+        newNode->prev = temp;
     };
 
-    T pop_front() {
-        node<T> *temp = head;
+    T popFront() {
+        Node<T> *temp = head;
         head = head->next;
+
+        if(head != nullptr) {
+            head->prev = nullptr;
+        }
+
         delete temp;
     }
 
-    T pop_back() {
-        if(head->next == NULL) {
+    void popBack() {
+        if(head->next == nullptr) {
             delete head;
-            head = NULL;
+            head = nullptr;
         } else {
-            node<T> *temp = head;
-            while(temp->next->next != NULL) {
+            Node<T> *temp = head;
+            while(temp->next->next != nullptr) {
                 temp = temp->next;
             }
             delete temp->next;
-            temp->next = NULL;
+            temp->next = nullptr;
         }
     }
 
     T operator[](int i){
-        node<T> *temp = head;
+        Node<T> *temp = head;
         int t = 0;
 
         while(t != i) {
@@ -93,14 +110,14 @@ public:
     };
 
     bool empty(){
-        return head == NULL;
+        return head == nullptr;
     };
 
     int size() {
         int size = 0;
-        node<T> *temp = head;
+        Node<T> *temp = head;
 
-        while(temp != NULL) {
+        while(temp != nullptr) {
             temp = temp->next;
             ++size;
         }
@@ -110,15 +127,15 @@ public:
 
     void clear(){
         while(!empty()) {
-            pop_front();
+            popFront();
         }
     };
 
     void sort() {
-        node<T> *temp = head;
+        Node<T> *temp = head;
         while (temp) {
-            node<T> *min = temp;
-            node<T> *r = temp->next;
+            Node<T> *min = temp;
+            Node<T> *r = temp->next;
 
             while (r) {
                 if (min->data > r->data) {
@@ -135,23 +152,25 @@ public:
     };
 
     void reverse(){
-        node<T> *temp = head;
-        node<T> *prev = NULL;
-        node<T> *next = NULL;
+        Node<T> *temp = head;
+        Node<T> *prev = nullptr;
 
-        while(temp != NULL) {
-            next = temp->next;
+        while(temp != nullptr) {
+            prev = temp->prev;
+            temp->prev = temp->next;
             temp->next = prev;
-            prev = temp;
-            temp = next;
+            temp = temp->prev;
         }
-        head = prev;
+
+        if(prev != nullptr) {
+            head = prev->prev;
+        }
     };
 
     void print() {
-        node<T> *temp = head;
+        Node<T> *temp = head;
 
-        while(temp->next != NULL) {
+        while(temp != nullptr) {
             std::cout << temp->data << " ";
             temp = temp->next;
         }
