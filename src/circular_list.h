@@ -9,8 +9,7 @@ struct Node {
     Node *prev;
     Node *next;
 
-    explicit Node(T data) {
-        this->data = data;
+    Node() {
         prev = nullptr;
         next = nullptr;
     };
@@ -28,16 +27,8 @@ public:
         head->prev = head;
     }
 
-    ~CircularLinkedList() {
-        while (!isEmpty()) {
-            popFront();
-        }
-
-        delete head;
-    }
-
     bool isEmpty() {
-        return head == head->next;
+        return head->next == head;
     }
 
     T front() {
@@ -49,7 +40,8 @@ public:
     }
 
     void pushFront(T data) {
-        auto *node = new Node<T>(data);
+        auto *node = new Node<T>;
+        node->data = data;
 
         node->next = head->next;
         node->prev = head;
@@ -58,11 +50,38 @@ public:
         head->next = node;
     }
 
+    void pushBack(T data) {
+        auto *node = new Node<T>;
+        node->data = data;
+
+        node->next = head;
+        node->prev = head->prev;
+
+        head->prev->next = node;
+        head->prev = node;
+    }
+
     void popFront() {
         Node<T> *temp = head->next;
         head->next = temp->next;
         temp->next->prev = head;
         delete temp;
+    }
+
+    void popBack() {
+        Node<T> *temp = head->prev;
+        head->prev = temp->prev;
+        temp->prev->next = head;
+        delete temp;
+    }
+
+    void print() {
+        Node<T> *temp = head->next;
+        while (temp != head) {
+            std::cout << temp->data << " ";
+            temp = temp->next;
+        }
+        std::cout << std::endl;
     }
 };
 
