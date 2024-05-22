@@ -15,4 +15,5 @@ add_executable(Algorithm
         src/hash_table.h
         src/binary_tree.h
         src/avl_tree.h
-        src/heap.h)
+        src/max_heap.h
+        src/min_heap.h)
