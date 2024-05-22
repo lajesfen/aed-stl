@@ -5,28 +5,28 @@
 
 template <typename T>
 struct AVLTree {
-    struct NodeAVL {
+    struct Node {
         T data;
-        NodeAVL *left;
-        NodeAVL *right;
+        Node *left;
+        Node *right;
         int height;
 
-        NodeAVL() {
+        Node() {
             left = nullptr;
             right = nullptr;
             height = 1;
         }
     };
 
-    NodeAVL *root;
+    Node *root;
 
     AVLTree() {
         root = NULL;
     };
 
-    NodeAVL *insert(NodeAVL *node, T value) {
+    Node *insert(Node *node, T value) {
         if(node == nullptr) {
-            node = new NodeAVL;
+            node = new Node;
             node->data = value;
 
             if(root == nullptr) {
@@ -47,7 +47,7 @@ struct AVLTree {
         return balance(node);
     }
 
-    NodeAVL *remove(NodeAVL *node, T value) {
+    Node *remove(Node *node, T value) {
         if (node == nullptr) {
             return node;
         }
@@ -58,16 +58,16 @@ struct AVLTree {
             node->right = remove(node->right, value);
         } else {
             if (node->left == nullptr) {
-                NodeAVL *temp = node->right;
+                Node *temp = node->right;
                 delete node;
                 return temp;
             } else if (node->right == nullptr) {
-                NodeAVL *temp = node->left;
+                Node *temp = node->left;
                 delete node;
                 return temp;
             }
 
-            NodeAVL *temp = getMinValue(node->right);
+            Node *temp = getMinValue(node->right);
             node->data = temp->data;
             node->right = remove(node->right, temp->data);
         }
@@ -76,7 +76,7 @@ struct AVLTree {
         return balance(node);
     }
 
-    int height(NodeAVL *node) {
+    int height(Node *node) {
         if(node == nullptr) {
             return 0;
         } else {
@@ -84,15 +84,15 @@ struct AVLTree {
         }
     };
 
-    int getBalance(NodeAVL *node) {
+    int getBalance(Node *node) {
         if (node == nullptr)
             return 0;
         return height(node->left) - height(node->right);
     };
 
-    NodeAVL *rightRotate(NodeAVL *y) {
-        NodeAVL *x = y->left;
-        NodeAVL *T2 = x->right;
+    Node *rightRotate(Node *y) {
+        Node *x = y->left;
+        Node *T2 = x->right;
 
         x->right = y;
         y->left = T2;
@@ -102,9 +102,9 @@ struct AVLTree {
         return x;
     };
 
-    NodeAVL *leftRotate(NodeAVL *x) {
-        NodeAVL *y = x->right;
-        NodeAVL *T2 = y->left;
+    Node *leftRotate(Node *x) {
+        Node *y = x->right;
+        Node *T2 = y->left;
 
         y->left = x;
         x->right = T2;
@@ -114,7 +114,7 @@ struct AVLTree {
         return y;
     };
 
-    NodeAVL *getMinValue(NodeAVL *node) {
+    Node *getMinValue(Node *node) {
         if(node == nullptr) {
             return nullptr;
         } else if (node->left == nullptr) {
@@ -124,7 +124,7 @@ struct AVLTree {
         }
     }
 
-    NodeAVL *balance(NodeAVL *node) {
+    Node *balance(Node *node) {
         int balanceFactor = getBalance(node);
 
         // Left-Left Case
@@ -152,7 +152,7 @@ struct AVLTree {
         return node;
     };
 
-    void postOrder(NodeAVL *node) {
+    void postOrder(Node *node) {
         if(node == nullptr) {
             return;
         }
@@ -162,7 +162,7 @@ struct AVLTree {
         std::cout << node->data << "\n";
     };
 
-    void inOrder(NodeAVL *node) {
+    void inOrder(Node *node) {
         if(node == nullptr) {
             return;
         }
@@ -172,7 +172,7 @@ struct AVLTree {
         inOrder(node->right);
     };
 
-    void preOrder(NodeAVL *node) {
+    void preOrder(Node *node) {
         if(node == nullptr) {
             return;
         }

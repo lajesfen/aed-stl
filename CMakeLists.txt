@@ -14,4 +14,5 @@ add_executable(Algorithm
         src/queue.h
         src/hash_table.h
         src/binary_tree.h
-        src/avl_tree.h)
+        src/avl_tree.h
+        src/heap.h)

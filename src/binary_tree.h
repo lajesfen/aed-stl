@@ -7,24 +7,24 @@
 
 template <typename T>
 struct BinaryTree {
-    struct NodeBT {
+    struct Node {
         T data;
-        NodeBT *left;
-        NodeBT *right;
+        Node *left;
+        Node *right;
 
-        NodeBT() {
+        Node() {
             left = nullptr;
             right = nullptr;
         }
     };
 
-    NodeBT *root;
+    Node *root;
 
     BinaryTree() {
         root = NULL;
     };
 
-    bool find(NodeBT *node, T value) {
+    bool find(Node *node, T value) {
         if(node == nullptr) {
             return false;
         } else if (value < node->data) {
@@ -36,9 +36,9 @@ struct BinaryTree {
         }
     };
 
-    NodeBT *insert(NodeBT *node, T value) {
+    Node *insert(Node *node, T value) {
         if(node == nullptr) {
-            node = new NodeBT;
+            node = new Node;
             node->data = value;
 
             if(root == nullptr) {
@@ -56,7 +56,43 @@ struct BinaryTree {
         return node;
     };
 
-    NodeBT *getMinValue(NodeBT *node) {
+    Node *insertBT(Node *node, T value) {
+        if(node == nullptr) {
+            node = new Node;
+            node->data = value;
+
+            if(root == nullptr) {
+                root = node;
+            }
+            return node;
+        }
+
+        Queue<Node*> q;
+        q.enqueue(node);
+
+        while(!q.isEmpty()) {
+            Node *temp = q.front();
+            q.dequeue();
+
+            if(temp->left != nullptr) {
+                q.enqueue(temp->left);
+            } else {
+                temp->left = new Node;
+                temp->left->data = value;
+                return node;
+            }
+
+            if(temp->right != nullptr) {
+                q.enqueue(temp->right);
+            } else {
+                temp->right = new Node;
+                temp->right->data = value;
+                return node;
+            }
+        }
+    }
+
+    Node *getMinValue(Node *node) {
         if(node == nullptr) {
             return nullptr;
         } else if (node->left == nullptr) {
@@ -66,17 +102,17 @@ struct BinaryTree {
         }
     }
 
-    NodeBT *getMaxValue(NodeBT *node) {
+    Node *getMaxValue(Node *node) {
         if(node == nullptr) {
             return nullptr;
         } else if (node->right == nullptr) {
             return node;
         } else {
-            return getMinValue(node->right);
+            return getMaxValue(node->right);
         }
     }
 
-    NodeBT *remove(NodeBT *node, T value) {
+    Node *remove(Node *node, T value) {
         if (node == nullptr) {
             return node;
         }
@@ -87,23 +123,23 @@ struct BinaryTree {
             node->right = remove(node->right, value);
         } else {
             if (node->left == nullptr) {
-                NodeBT *temp = node->right;
+                Node *temp = node->right;
                 delete node;
                 return temp;
             } else if (node->right == nullptr) {
-                NodeBT *temp = node->left;
+                Node *temp = node->left;
                 delete node;
                 return temp;
             }
 
-            NodeBT *temp = getMinValue(node->right);
+            Node *temp = getMinValue(node->right);
             node->data = temp->data;
             node->right = remove(node->right, temp->data);
         }
         return node;
     }
 
-    void postOrder(NodeBT *node) {
+    void postOrder(Node *node) {
         if(node == nullptr) {
             return;
         }
@@ -113,7 +149,7 @@ struct BinaryTree {
         std::cout << node->data << "\n";
     };
 
-    void inOrder(NodeBT *node) {
+    void inOrder(Node *node) {
         if(node == nullptr) {
             return;
         }
@@ -123,7 +159,7 @@ struct BinaryTree {
         inOrder(node->right);
     };
 
-    void preOrder(NodeBT *node) {
+    void preOrder(Node *node) {
         if(node == nullptr) {
             return;
         }
@@ -134,11 +170,11 @@ struct BinaryTree {
     };
 
     void breadthFirstSearch() {
-        Queue<NodeBT*> q;
+        Queue<Node*> q;
         q.enqueue(this->root);
 
         while(!q.isEmpty()) {
-            NodeBT *node = q.dequeue();
+            Node *node = q.dequeue();
             std::cout << node->data << "\n";
 
             if(node->left != nullptr) {
@@ -151,11 +187,11 @@ struct BinaryTree {
     }
 
     void depthFirstSearch() {
-        Stack<NodeBT*> stack;
+        Stack<Node*> stack;
         stack.push(this->root);
 
         while(!stack.isEmpty()) {
-            NodeBT *node = stack.pop();
+            Node *node = stack.pop();
             std::cout << node->data << "\n";
 
             if(node->right != nullptr) {
@@ -168,7 +204,7 @@ struct BinaryTree {
         }
     }
 
-    int depth(NodeBT *node) {
+    int depth(Node *node) {
         if(node == nullptr) {
             return 0;
         } else {
@@ -183,14 +219,14 @@ struct BinaryTree {
         }
     }
 
-    NodeBT *getPredecessor(NodeBT *node) {
+    Node *getPredecessor(Node *node) {
         if(node == nullptr || node->left == nullptr) {
             return nullptr;
         }
         return getMaxValue(node->left);
     }
 
-    NodeBT *getSuccessor(NodeBT *node) {
+    Node *getSuccessor(Node *node) {
         if(node == nullptr || node->right == nullptr) {
             return nullptr;
         }
