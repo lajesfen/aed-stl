@@ -5,24 +5,29 @@
 
 template <typename T>
 struct AVLTree {
-    struct NodeBT {
+    struct NodeAVL {
         T data;
-        NodeBT *left;
-        NodeBT *right;
+        NodeAVL *left;
+        NodeAVL *right;
         int height;
+
+        NodeAVL() {
+            left = nullptr;
+            right = nullptr;
+            height = 1;
+        }
     };
 
-    NodeBT *root;
+    NodeAVL *root;
 
     AVLTree() {
         root = NULL;
     };
 
-    NodeBT *insert(NodeBT *node, T value) {
+    NodeAVL *insert(NodeAVL *node, T value) {
         if(node == nullptr) {
-            node = new NodeBT;
+            node = new NodeAVL;
             node->data = value;
-            node->height = 0;
 
             if(root == nullptr) {
                 root = node;
@@ -39,11 +44,39 @@ struct AVLTree {
         }
 
         node->height = std::max(height(node->left), height(node->right)) + 1;
-        balance(node);
-        return node;
-    };
+        return balance(node);
+    }
 
-    int height(NodeBT *node) {
+    NodeAVL *remove(NodeAVL *node, T value) {
+        if (node == nullptr) {
+            return node;
+        }
+
+        if (value < node->data) {
+            node->left = remove(node->left, value);
+        } else if (value > node->data) {
+            node->right = remove(node->right, value);
+        } else {
+            if (node->left == nullptr) {
+                NodeAVL *temp = node->right;
+                delete node;
+                return temp;
+            } else if (node->right == nullptr) {
+                NodeAVL *temp = node->left;
+                delete node;
+                return temp;
+            }
+
+            NodeAVL *temp = getMinValue(node->right);
+            node->data = temp->data;
+            node->right = remove(node->right, temp->data);
+        }
+
+        node->height = std::max(height(node->left), height(node->right)) + 1;
+        return balance(node);
+    }
+
+    int height(NodeAVL *node) {
         if(node == nullptr) {
             return 0;
         } else {
@@ -51,51 +84,75 @@ struct AVLTree {
         }
     };
 
-    int getBalance(NodeBT *node) {
+    int getBalance(NodeAVL *node) {
         if (node == nullptr)
             return 0;
         return height(node->left) - height(node->right);
     };
 
-    NodeBT *rightRotate(NodeBT *y) {
-        NodeBT *z = y->left;
-        NodeBT *T2 = z->right;
+    NodeAVL *rightRotate(NodeAVL *y) {
+        NodeAVL *x = y->left;
+        NodeAVL *T2 = x->right;
 
+        x->right = y;
         y->left = T2;
-        z->right = y;
 
         y->height = std::max(height(y->left), height(y->right)) + 1;
-        z->height = std::max(height(z->left), height(z->right)) + 1;
-        return z;
+        x->height = std::max(height(x->left), height(x->right)) + 1;
+        return x;
     };
 
-    NodeBT *leftRotate(NodeBT *x) {
-        NodeBT *z = x->right;
-        NodeBT *T2 = z->left;
+    NodeAVL *leftRotate(NodeAVL *x) {
+        NodeAVL *y = x->right;
+        NodeAVL *T2 = y->left;
 
+        y->left = x;
         x->right = T2;
-        z->left = x;
 
         x->height = std::max(height(x->left), height(x->right)) + 1;
-        z->height = std::max(height(z->left), height(z->right)) + 1;
-        return z;
+        y->height = std::max(height(y->left), height(y->right)) + 1;
+        return y;
     };
 
-    NodeBT *balance(NodeBT *node) {
-        if(getBalance(node) >= 2) {
-            if(getBalance(node->left) <= -1) {
-                return leftRotate(node);
-            }
+    NodeAVL *getMinValue(NodeAVL *node) {
+        if(node == nullptr) {
+            return nullptr;
+        } else if (node->left == nullptr) {
+            return node;
+        } else {
+            return getMinValue(node->left);
+        }
+    }
+
+    NodeAVL *balance(NodeAVL *node) {
+        int balanceFactor = getBalance(node);
+
+        // Left-Left Case
+        if(balanceFactor > 1 && getBalance(node->left) >= 0) {
             return rightRotate(node);
-        } else if (getBalance(node) <= -2) {
-            if(getBalance(node->right) >= 1) {
-                return rightRotate(node);
-            }
+        }
+
+        // Right-Right Case
+        if(balanceFactor < -1 && getBalance(node->right) <= 0) {
             return leftRotate(node);
         }
+
+        // Left-Right Case
+        if(balanceFactor > 1 && getBalance(node->left) < 0) {
+            node->left = leftRotate(node->left);
+            return rightRotate(node);
+        }
+
+        // Right-Left Case
+        if(balanceFactor < -1 && getBalance(node->right) > 0) {
+            node->right = rightRotate(node->right);
+            return leftRotate(node);
+        }
+
+        return node;
     };
 
-    void postOrder(NodeBT *node) {
+    void postOrder(NodeAVL *node) {
         if(node == nullptr) {
             return;
         }
@@ -105,7 +162,7 @@ struct AVLTree {
         std::cout << node->data << "\n";
     };
 
-    void inOrder(NodeBT *node) {
+    void inOrder(NodeAVL *node) {
         if(node == nullptr) {
             return;
         }
@@ -115,7 +172,7 @@ struct AVLTree {
         inOrder(node->right);
     };
 
-    void preOrder(NodeBT *node) {
+    void preOrder(NodeAVL *node) {
         if(node == nullptr) {
             return;
         }
