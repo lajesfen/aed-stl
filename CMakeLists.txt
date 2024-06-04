@@ -16,4 +16,6 @@ add_executable(Algorithm
         src/binary_tree.h
         src/avl_tree.h
         src/max_heap.h
-        src/min_heap.h)
+        src/min_heap.h
+        src/graph_list.h
+        src/graph_matrix.h)
