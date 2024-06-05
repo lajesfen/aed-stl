@@ -2,11 +2,19 @@
 #define ALGORITHM_DISJOINT_SET_H
 
 #include <vector>
+#include <algorithm>
 
 class DisjointSet {
 private:
     std::vector<int> parent;
     std::vector<int> rank;
+
+    struct Edge {
+        int u, v, weight;
+        bool operator<(const Edge &other) const {
+            return weight < other.weight;
+        }
+    };
 
 public:
     DisjointSet(int size) {
@@ -43,6 +51,24 @@ public:
             }
         }
     }
+
+    void kruskalMST(std::vector<Edge> &edges, int V) {
+        std::sort(edges.begin(), edges.end());
+        DisjointSet ds(V);
+
+        std::vector<Edge> result;
+
+        for (const auto &edge : edges) {
+            int u = edge.u;
+            int v = edge.v;
+            if (ds.find(u) != ds.find(v)) {
+                result.push_back(edge);
+                ds.unite(u, v);
+            }
+        }
+    }
+
+
 };
 
 #endif //ALGORITHM_DISJOINT_SET_H
