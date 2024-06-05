@@ -19,4 +19,5 @@ add_executable(Algorithm
         src/min_heap.h
         src/graph_list.h
         src/graph_matrix.h
-        src/trie.h)
+        src/trie.h
+        src/disjoint_set.h)
