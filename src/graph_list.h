@@ -1,5 +1,0 @@
-#ifndef ALGORITHM_GRAPH_H
-#define ALGORITHM_GRAPH_H
-
-
-#endif //ALGORITHM_GRAPH_H

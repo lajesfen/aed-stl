@@ -17,7 +17,8 @@ add_executable(Algorithm
         src/avl_tree.h
         src/max_heap.h
         src/min_heap.h
-        src/graph_list.h
         src/graph_matrix.h
         src/trie.h
-        src/disjoint_set.h)
+        src/disjoint_set.h
+        src/mst.h
+        src/b_tree.h)
