@@ -9,12 +9,12 @@ struct AVLTree {
         T data;
         Node *left;
         Node *right;
-        int height;
+        int balanceFactor;
 
         Node() {
             left = nullptr;
             right = nullptr;
-            height = 1;
+            balanceFactor = 0;
         }
     };
 
@@ -24,7 +24,7 @@ struct AVLTree {
         root = NULL;
     };
 
-    Node *insert(Node *node, T value) {
+    Node *insert(Node* node, int value) {
         if(node == nullptr) {
             node = new Node;
             node->data = value;
@@ -35,19 +35,16 @@ struct AVLTree {
             return node;
         }
 
-        if(value < node->data) {
+        if (value < node->data) {
             node->left = insert(node->left, value);
-        } else if(value > node->data) {
+        } else if (value > node->data) {
             node->right = insert(node->right, value);
-        } else {
-            return node;
         }
 
-        node->height = std::max(height(node->left), height(node->right)) + 1;
         return balance(node);
     }
 
-    Node *remove(Node *node, T value) {
+    Node *remove(Node* node, int value) {
         if (node == nullptr) {
             return node;
         }
@@ -57,62 +54,87 @@ struct AVLTree {
         } else if (value > node->data) {
             node->right = remove(node->right, value);
         } else {
-            if (node->left == nullptr) {
-                Node *temp = node->right;
-                delete node;
-                return temp;
-            } else if (node->right == nullptr) {
-                Node *temp = node->left;
-                delete node;
-                return temp;
+            if (node->left == nullptr || node->right == nullptr) {
+                Node* temp = node->left ? node->left : node->right;
+                if (temp == nullptr) {
+                    temp = node;
+                    node = nullptr;
+                } else {
+                    *node = *temp;
+                }
+                delete temp;
+            } else {
+                Node* temp = findMin(node->right);
+                node->data = temp->data;
+                node->right = remove(node->right, temp->data);
             }
-
-            Node *temp = getMinValue(node->right);
-            node->data = temp->data;
-            node->right = remove(node->right, temp->data);
         }
 
-        node->height = std::max(height(node->left), height(node->right)) + 1;
+        if (node == nullptr) {
+            return node;
+        }
+
         return balance(node);
     }
 
     int height(Node *node) {
         if(node == nullptr) {
-            return 0;
-        } else {
-            return node->height;
+            return -1;
         }
+        return 1 + std::max(height(node->left), height(node->right));
     };
 
-    int getBalance(Node *node) {
-        if (node == nullptr)
-            return 0;
-        return height(node->left) - height(node->right);
-    };
-
-    Node *rightRotate(Node *y) {
-        Node *x = y->left;
-        Node *T2 = x->right;
-
-        x->right = y;
-        y->left = T2;
-
-        y->height = std::max(height(y->left), height(y->right)) + 1;
-        x->height = std::max(height(x->left), height(x->right)) + 1;
-        return x;
-    };
-
-    Node *leftRotate(Node *x) {
-        Node *y = x->right;
-        Node *T2 = y->left;
-
+    Node *rotateLeft(Node* x) {
+        Node* y = x->right;
+        x->right = y->left;
         y->left = x;
-        x->right = T2;
-
-        x->height = std::max(height(x->left), height(x->right)) + 1;
-        y->height = std::max(height(y->left), height(y->right)) + 1;
+        updateBalanceFactor(x);
+        updateBalanceFactor(y);
         return y;
+    }
+
+    Node *rotateRight(Node* y) {
+        Node* x = y->left;
+        y->left = x->right;
+        x->right = y;
+        updateBalanceFactor(y);
+        updateBalanceFactor(x);
+        return x;
+    }
+
+    Node *rotateLeftThenRight(Node* n) {
+        n->left = rotateLeft(n->left);
+        return rotateRight(n);
+    }
+
+    Node *rotateRightThenLeft(Node* n) {
+        n->right = rotateRight(n->right);
+        return rotateLeft(n);
+    }
+
+    Node *balance(Node* node) {
+        updateBalanceFactor(node);
+
+        if (node->balanceFactor == -2) {
+            if (node->left->balanceFactor <= 0) {
+                return rotateRight(node);
+            } else {
+                return rotateLeftThenRight(node);
+            }
+        } else if (node->balanceFactor == 2) {
+            if (node->right->balanceFactor >= 0) {
+                return rotateLeft(node);
+            } else {
+                return rotateRightThenLeft(node);
+            }
+        }
+
+        return node;
     };
+
+    void updateBalanceFactor(Node* node) {
+        node->balanceFactor = height(node->right) - height(node->left);
+    }
 
     Node *getMinValue(Node *node) {
         if(node == nullptr) {
@@ -123,34 +145,6 @@ struct AVLTree {
             return getMinValue(node->left);
         }
     }
-
-    Node *balance(Node *node) {
-        int balanceFactor = getBalance(node);
-
-        // Left-Left Case
-        if(balanceFactor > 1 && getBalance(node->left) >= 0) {
-            return rightRotate(node);
-        }
-
-        // Right-Right Case
-        if(balanceFactor < -1 && getBalance(node->right) <= 0) {
-            return leftRotate(node);
-        }
-
-        // Left-Right Case
-        if(balanceFactor > 1 && getBalance(node->left) < 0) {
-            node->left = leftRotate(node->left);
-            return rightRotate(node);
-        }
-
-        // Right-Left Case
-        if(balanceFactor < -1 && getBalance(node->right) > 0) {
-            node->right = rightRotate(node->right);
-            return leftRotate(node);
-        }
-
-        return node;
-    };
 
     void postOrder(Node *node) {
         if(node == nullptr) {
