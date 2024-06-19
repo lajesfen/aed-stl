@@ -21,4 +21,5 @@ add_executable(Algorithm
         src/trie.h
         src/disjoint_set.h
         src/mst.h
-        src/b_tree.h)
+        src/b_tree.h
+        src/graph_list.h)
