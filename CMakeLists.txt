@@ -22,4 +22,6 @@ add_executable(Algorithm
         src/disjoint_set.h
         src/mst.h
         src/b_tree.h
-        src/graph_list.h)
+        src/graph_list.h
+        src/simplified_graph.h
+        src/simplified_graph.h)
