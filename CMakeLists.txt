@@ -24,4 +24,5 @@ add_executable(Algorithm
         src/b_tree.h
         src/graph_list.h
         src/simplified_graph.h
-        src/simplified_graph.h)
+        src/simplified_graph.h
+        src/sparse_matrix.h)
