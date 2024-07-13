@@ -202,4 +202,128 @@ void topologicalSort()
     }
 }
 
+
+
+
+
+/**
+ * Loose Problems
+ **/
+
+// 1. Find isles (1) in grid.
+bool DFS(int currRow, int currCol, std::vector<std::vector<int>> &vis) {
+    if (currRow < 0 || currRow >= h || currCol < 0 || currCol >= w || vis[currRow][currCol] || grid[currRow][currCol] == '0') {
+        return false;
+    }
+
+    vis[currRow][currCol] = 1;
+    std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    for (auto dir: directions) {
+        DFS(currRow + dir.first, currCol + dir.second, vis);
+    }
+    return true;
+}
+
+std::vector<std::vector<int>> findSCC() {
+    std::vector<std::vector<int>> ans;
+    std::vector<std::vector<int>> vis(h, std::vector<int>(w, 0));
+
+    for(int i = 0; i < h; ++i) {
+        for(int j = 0; j < w; ++j) {
+            if(!vis[i][j] && grid[i][j] == '1') {
+                std::vector<int> scc;
+
+                if(DFS(i, j, vis)) {
+                    scc.push_back(i * w + j);
+                    ans.push_back(scc);
+                }
+            }
+        }
+    }
+
+    return ans;
+}
+
+// 2. Find isles (1) in grid (USING BFS)
+bool BFS(int currRow, int currCol, std::vector<std::vector<int>> &vis) {
+    Queue<std::pair<int, int>> q;
+    q.enqueue({currRow, currCol});
+    vis[currRow][currCol] = 1;
+
+    std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+
+    while (!q.isEmpty()) {
+        auto [row, col] = q.front();
+        q.dequeue();
+
+        // Explore adjacent cells
+        for (auto dir : directions) {
+            int newRow = row + dir.first;
+            int newCol = col + dir.second;
+
+            // Check if the new cell is valid and not visited
+            if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w && grid[newRow][newCol] == '1' && !vis[newRow][newCol]) {
+                q.enqueue({newRow, newCol});
+                vis[newRow][newCol] = 1;
+            }
+        }
+    }
+    return true;
+}
+
+std::vector<std::vector<int>> findSCC(std::vector<std::vector<char>> &grid) {
+    int h = grid.size();
+    int w = grid[0].size();
+    std::vector<std::vector<int>> ans;
+    std::vector<std::vector<int>> vis(h, std::vector<int>(w, 0));
+
+    for (int i = 0; i < h; ++i) {
+        for (int j = 0; j < w; ++j) {
+            if (!vis[i][j] && grid[i][j] == '1') {
+                std::vector<int> scc;
+
+                if (BFS(i, j, vis, grid)) {
+                    scc.push_back(i * w + j);
+                    ans.push_back(scc);
+                }
+            }
+        }
+    }
+
+    return ans;
+}
+
+// 3. Find if there's a path from top-left to bottom-right
+int BFS(int currRow, int currCol) {
+    Queue<std::pair<int, int>> q;
+    q.enqueue({currRow, currCol});
+    grid[currRow][currCol] = 1;
+
+    std::vector<std::pair<int, int>> directions = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}, {-1, -1}, {-1, 1}, {1, -1}, {1, 1}};
+
+    while (!q.isEmpty()) {
+        auto [row, col] = q.front();
+        q.dequeue();
+
+        // Explore adjacent cells
+        for (auto dir : directions) {
+            int newRow = row + dir.first;
+            int newCol = col + dir.second;
+
+            // Check if the new cell is valid and not visited
+            if (newRow >= 0 && newRow < h && newCol >= 0 && newCol < w && grid[newRow][newCol] == 0 && !grid[newRow][newCol]) {
+                if (newRow == h-1 && newCol == w-1) {
+                    return grid[row][col] + 1;
+                }
+
+                q.enqueue({newRow, newCol});
+                grid[newRow][newCol] = grid[row][col] + 1;
+            }
+        }
+    }
+    return -1;
+}
+
+
 #endif //ALGORITHM_LOOSE_CODE_H
