@@ -44,6 +44,10 @@ public:
         front_index = (front_index + 1) % MAX_Q_SIZE;
         return item;
     }
+
+    int size() {
+        return (rear_index - front_index + MAX_Q_SIZE) % MAX_Q_SIZE;
+    }
 };
 
 #endif //ALGORITHM_QUEUE_H

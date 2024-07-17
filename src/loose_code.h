@@ -325,5 +325,207 @@ int BFS(int currRow, int currCol) {
     return -1;
 }
 
+// 4. Get Height of BFS
+int BFS(int src) {
+    Queue q;
+    int height = -1;
+    std::vector<bool> visited(nodes.size(), false);
+
+    q.enqueue(src);
+    visited[src] = true;
+
+    while (!q.isEmpty()) {
+        int size = q.size();
+        ++height;
+
+        for(int i = 0; i < size; ++i) {
+            int node = q.front();
+            q.dequeue();
+
+            for (const auto &child : nodes[node].adj) {
+                if (!visited[child]) {
+                    q.enqueue(child);
+                    visited[child] = true;
+                }
+            }
+        }
+    }
+
+    return height;
+}
+
+// 5. Get "Provinces" of a Graph Matrix
+void DFS(vector<vector<int>> graph, int cur, vector<bool> &visited){
+    if(visited[cur]){
+        return;
+    }
+
+    visited[cur] = true;
+    for(int i = 0; i < graph.size(); i++){
+        if(graph[cur][i] == 1)
+            DFS(graph, i, visited);
+    }
+}
+
+int findCircleNum(vector<vector<int>>& isConnected) {
+    vector<bool> visited(isConnected.size(), false);
+    int count = 0;
+
+    for(int i = 0; i < isConnected.size(); ++i) {
+        if(!visited[i]) {
+            DFS(isConnected, 0, visited);
+            count++;
+        }
+    }
+
+    return count;
+}
+
+// 6. Redundant Connections: In each edge addition checks if a loop is created. If so, returns the edge.
+bool DFS(int curr, std::vector<int> &vis, int par) {
+    if (vis[curr]) {
+        return true;
+    }
+
+    vis[curr] = 1;
+    for (auto x : nodes[curr].adj) {
+        if (x != par && DFS(x, vis, curr)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+vector<int> findRedundantConnection(vector<vector<int>> &edges) {
+    int n = edges.size();
+    std::vector<int> vis(n, 0);
+    Graph graph;
+
+    for(int i = 0; i < n; ++i) {
+        graph.addNode();
+    }
+
+    for(auto &edge: edges) {
+        fill(begin(vis), end(vis), 0);
+        graph.addEdge(edge[0] - 1, edge[1]  - 1);
+        if(graph.DFS(edge[0] - 1, vis, -1)) {
+            return edge;
+        }
+    }
+
+    return {};
+}
+
+// 7. Network Delay Time
+int networkDelayTime(vector<vector<int>>& times, int n, int k) {
+    Graph graph;
+    int max = -1;
+
+    for(int i = 0; i < n; ++i) {
+        graph.addNode();
+    }
+
+    for(auto &edge: times) {
+        graph.addEdge(edge[0] - 1, edge[1] - 1, edge[2]);
+    }
+
+    auto dijkstra = graph.dijkstra(k - 1);
+    for(auto d : dijkstra) {
+        if(d > max) {
+            max = d;
+        }
+    }
+
+    return (max == INT_MAX ? -1 : max);
+}
+
+// 8. Cheapest Flights Within K
+int BFS(int src, int des, int k) {
+    Queue<std::tuple<int, int, int>> q;
+    std::vector<int> minCost(nodes.size(), INT_MAX);
+
+    q.enqueue({src, 0, 0});
+    minCost[src] = 0;
+
+    while (!q.isEmpty()) {
+        auto [node, cost, stops] = q.front();
+        q.dequeue();
+
+        if(stops > k) continue;
+
+        for (const auto &child : nodes[node].adj) {
+            int newCost = cost + child.second;
+            if (newCost < minCost[child.first] || stops < k) {
+                minCost[child.first] = newCost;
+                q.enqueue({child.first, newCost, stops + 1});
+            }
+        }
+
+    }
+
+    return minCost[des] == INT_MAX ? -1 : minCost[des];
+}
+
+// 9. Connected Networks
+int makeConnected(int n, vector<vector<int>>& connections) {
+    Graph graph;
+
+    if(connections.size() < n - 1) {
+        return -1;
+    }
+
+    for(int i = 0; i < n; ++i) {
+        graph.addNode();
+    }
+
+    for(auto connection : connections) {
+        graph.addEdge(connection[0], connection[1]);
+    }
+
+    auto scc = graph.findSCC();
+    return scc.size() - 1;
+}
+
+// 10. Check if Bipartite using BFS
+bool isBipartiteBFS(int src) {
+    std::vector<int> color(nodes.size(), -1);
+    Queue<int> q;
+
+    q.enqueue(src);
+    color[src] = 0;
+
+    while (!q.isEmpty()) {
+        int node = q.front();
+        q.dequeue();
+
+        for (const auto &child : nodes[node].adj) {
+            if(color[child] == -1) {
+                color[child] = 1 - color[node];
+                q.enqueue(child);
+            } else if(color[child] == color[node]) {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+bool isBipartite(vector<vector<int>>& graph) {
+    int n = graph.size();
+    Graph g;
+
+    for(int i = 0; i < n; ++i) {
+        g.addNode();
+    }
+
+    for(int i = 0; i < n; ++i) {
+        for(int j = 0; j < graph[i].size(); ++j) {
+            g.addEdge(i, graph[i][j]);
+        }
+    }
+
+    return g.isBipartiteBFS(0);
+}
 
 #endif //ALGORITHM_LOOSE_CODE_H

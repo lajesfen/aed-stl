@@ -73,6 +73,21 @@ public:
         }
     }
 
+    // Can be used to find cycles
+    bool DFS(int curr, std::vector<int> &vis, int par) {
+        if (vis[curr]) {
+            return true;
+        }
+
+        vis[curr] = 1;
+        for (auto x : nodes[curr].adj) {
+            if (x.first != par && DFS(x.first, vis, curr)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     bool DFS(int curr, int des, std::vector<int> &vis) {
         if (curr == des) {
             return true;
@@ -94,6 +109,7 @@ public:
         return DFS(src, des, vis);
     }
 
+    // Component where a vertex can be reached from any other vertex in component
     std::vector<std::vector<int>> findSCC() {
         int n = nodes.size();
         std::vector<std::vector<int>> ans;
@@ -117,16 +133,18 @@ public:
         return ans;
     }
 
+    // Updates distances so they're minimum
     void relax(int u, int v, int weight, std::vector<int> &dist) {
         if (dist[u] != INT_MAX && dist[u] + weight < dist[v]) {
             dist[v] = dist[u] + weight;
         }
     }
 
+    // Shortest path, 1 to all (no negative nums)
     std::vector<int> dijkstra(int src) {
         int n = nodes.size();
         std::vector<int> dist(n, INT_MAX);
-        std::vector<bool> sptSet(n, false);
+        std::vector<bool> sptSet(n, false);  // Shortest Paths set
 
         dist[src] = 0;
 
@@ -175,6 +193,7 @@ public:
         std::cout << std::endl;
     }
 
+    // Shortest path, 1 to all (negative nums, no negative cycles)
     std::vector<int> bellmanFord(int src) {
         int n = nodes.size();
         std::vector<int> dist(n, INT_MAX);
@@ -200,6 +219,7 @@ public:
         return dist;
     }
 
+    // Shortest path, all to all (negative nums, no negative cycles)
     std::vector<std::vector<int>> floydWarshall() {
         int n = nodes.size();
         std::vector<std::vector<int>> dist(n, std::vector<int>(n, INT_MAX));

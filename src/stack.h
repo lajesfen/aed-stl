@@ -43,6 +43,10 @@ public:
         (top_index)--;
         return item;
     }
+
+    int size() {
+        return top_index + 1;
+    }
 };
 
 #endif //ALGORITHM_STACK_H
